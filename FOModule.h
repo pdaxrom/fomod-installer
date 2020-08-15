@@ -4,125 +4,136 @@
 using namespace std;
 
 class ModuleTitle {
-    string				position;
-    string				colour;
+public:
+	string position;
+	string colour;
 
-    string				value;
+	string value;
 };
 
 class HeaderImage {
-    string				path;
-    bool				showImage;
-    bool				showFade;
-    int					height;
+public:
+	string path;
+	bool showImage;
+	bool showFade;
+	int height;
 };
 
 class FileDependency {
-    string				file;
-    string				state;
+	string file;
+	string state;
 };
 
 class FlagDependency {
-    string				flag;
-    bool				value;
+	string flag;
+	bool value;
 };
 
 class CompositeDependency {
-    string				op;
+	string op;
 
-    list<FileDependency>		fileDependency;
-    list<FlagDependency>		flagDependency;
-    string				gameDependency;
-    string				fommDependency;
-    list<CompositeDependency>		compositeDependency;
+	list<FileDependency> fileDependency;
+	list<FlagDependency> flagDependency;
+	string gameDependency;
+	string fommDependency;
+	list<CompositeDependency> compositeDependency;
+};
+
+class FileType {
+public:
+	string source;
+	string destination;
+	bool alwaysInstall;
+	bool installIfUsable;
+	int priority;
 };
 
 class FileList {
-    string				source;
-    string				destination;
-    bool				alwaysInstall;
-    bool				installIfUsable;
-    int					priority;
+public:
+	list<FileType> file;
+	list<FileType> folder;
 };
 
 class SetConditionFlag {
-    string				name;
-    bool				value;
+	string name;
+	bool value;
 };
 
 class ConditionFlagList {
-    list<SetConditionFlag>		flag;
+	list<SetConditionFlag> flag;
 };
 
 class DependencyPattern {
-    CompositeDependency			dependencies;
-    string				type;
+	CompositeDependency dependencies;
+	string type;
 };
 
 class DependencyPatternList {
-    list<DependencyPattern>		pattern;
+	list<DependencyPattern> pattern;
 };
 
 class DependencyPluginType {
-    string				defaultType;
-    DependencyPatternList		patterns;
+	string defaultType;
+	DependencyPatternList patterns;
 };
 
 class PluginTypeDescriptor {
-    DependencyPluginType		dependencyType;
-    string				type;
+	DependencyPluginType dependencyType;
+	string type;
 };
 
 class Plugin {
-    string				description;
-    string				image;
-    FileList				files;
-    ConditionFlagList			conditionFlags;
-    PluginTypeDescriptor		typeDescriptor;
+	string description;
+	string image;
+	FileList files;
+	ConditionFlagList conditionFlags;
+	PluginTypeDescriptor typeDescriptor;
 };
 
 class PluginList {
-    list<Plugin>			plugin;
+	list<Plugin> plugin;
 };
 
 class Group {
-    string				name;
-    string				type;
+	string name;
+	string type;
 
-    PluginList				plugins;
+	PluginList plugins;
 };
 
 class GroupList {
-    list<Group>				group;
+	list<Group> group;
 };
 
 class InstallStep {
-    CompositeDependency			visible;
-    list<GroupList>			optionalFileGroups;
+	CompositeDependency visible;
+	list<GroupList> optionalFileGroups;
 };
 
 class StepList {
-    list<InstallStep>			installStep;
+	string order;
+	list<InstallStep> installStep;
 };
 
 class ConditionalInstallPattern {
-    CompositeDependency			dependencies;
-    FileList				files;
+	CompositeDependency dependencies;
+	FileList files;
 };
 
 class ConditionalInstallPatternList {
-    list<ConditionalInstallPattern>	pattern;
+	list<ConditionalInstallPattern> pattern;
 };
 
 class ConditionalFileInstallList {
-    ConditionalInstallPatternList	patterns;
+	ConditionalInstallPatternList patterns;
 };
 
 class FOModule {
-    ModuleTitle				moduleName;
-    HeaderImage				moduleImage;
-    CompositeDependency			moduleDependencies;
-    FileList				requiredInstallFiles;
-    StepList				installSteps;
-    ConditionalFileInstallList		conditionalFileInstalls;
+public:
+	ModuleTitle moduleName;
+	HeaderImage moduleImage;
+	CompositeDependency moduleDependencies;
+	FileList requiredInstallFiles;
+	StepList installSteps;
+	ConditionalFileInstallList conditionalFileInstalls;
 };
