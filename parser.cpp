@@ -34,21 +34,21 @@ int GetIntegerFromString(char *s, int f) {
 }
 
 void ParseRequiredInstallFiles(FOModule *fomod, xmlNode *node) {
-	xmlNode *cur_node = NULL;
+	for (; node; node = node->next) {
+		if(xmlIsBlankNode(node)) {
+			continue;
+		}
 
-	for (cur_node = node; cur_node; cur_node = cur_node->next) {
-		printf(">>%s\n", cur_node->name);
-
-		string name((char *)cur_node->name);
+		string name((char *)node->name);
 
 		if (!name.compare("folder") ||
 				!name.compare("file")) {
 			FileType file;
-			file.source = (char *)xmlGetProp(cur_node, (const xmlChar*)"source");
-			file.destination = (char *)xmlGetProp(cur_node, (const xmlChar*)"destination");
-			file.alwaysInstall = GetBooleanFromString((char *) xmlGetProp(cur_node, (const xmlChar *)"alwaysInstall"), 1);
-			file.installIfUsable = GetBooleanFromString((char *) xmlGetProp(cur_node, (const xmlChar *)"installIfUsable"), 1);
-			file.priority = GetIntegerFromString((char *) xmlGetProp(cur_node, (const xmlChar *)"priority"), 1);
+			file.source = (char *)xmlGetProp(node, (const xmlChar*)"source");
+			file.destination = (char *)xmlGetProp(node, (const xmlChar*)"destination");
+			file.alwaysInstall = GetBooleanFromString((char *) xmlGetProp(node, (const xmlChar *)"alwaysInstall"), 1);
+			file.installIfUsable = GetBooleanFromString((char *) xmlGetProp(node, (const xmlChar *)"installIfUsable"), 1);
+			file.priority = GetIntegerFromString((char *) xmlGetProp(node, (const xmlChar *)"priority"), 1);
 
 			if (name.compare("folder")) {
 				fomod->requiredInstallFiles.folder.push_back(file);
@@ -61,19 +61,20 @@ void ParseRequiredInstallFiles(FOModule *fomod, xmlNode *node) {
 
 FOModule* ParseConfigXml(xmlNode *node) {
 	FOModule* fomod = new FOModule();
-	xmlNode *cur_node = NULL;
 
-	for (cur_node = node; cur_node; cur_node = cur_node->next) {
-		printf(">>%s\n", cur_node->name);
+	for (; node; node = node->next) {
+		if(xmlIsBlankNode(node)) {
+			continue;
+		}
 
-		string name((char *)cur_node->name);
+		string name((char *)node->name);
 
 		if (!name.compare("moduleName")) {
-			fomod->moduleName.value = (char *)xmlNodeGetContent(cur_node);
+			fomod->moduleName.value = (char *)xmlNodeGetContent(node);
 		} else if (!name.compare("moduleImage")) {
-			fomod->moduleImage.path = (char *)xmlGetProp(cur_node, (const xmlChar*)"path");
+			fomod->moduleImage.path = (char *)xmlGetProp(node, (const xmlChar*)"path");
 		} else if (!name.compare("requiredInstallFiles")) {
-			ParseRequiredInstallFiles(fomod, cur_node->children);
+			ParseRequiredInstallFiles(fomod, node->children);
 		}
 	}
 
@@ -82,29 +83,16 @@ FOModule* ParseConfigXml(xmlNode *node) {
 
 FOModule* ParseXml(xmlNode *node) {
 	FOModule* fomod;
-	xmlNode *cur_node = NULL;
 
-	for (cur_node = node; cur_node; cur_node = cur_node->next) {
-		if (cur_node->type == XML_ELEMENT_NODE) {
-			printf(">%s\n", cur_node->name);
-
-			if (!string((char *)cur_node->name).compare("config")) {
-				fomod = ParseConfigXml(cur_node->children);
-			}
-
-			if (xmlChildElementCount(cur_node) == 0) {
-				/* JSON string object */
-//        cur_jstr = json_object_new_string(xmlNodeGetContent(cur_node));
-//        cur_jobj = json_object_new_object();
-//        json_object_object_add(jobj, cur_node->name, cur_jstr);
-			} else {
-				/* JSON object */
-//        cur_jobj = json_object_new_object();
-//        json_object_object_add(jobj, cur_node->name, json_object_get(cur_jobj));
+	for (; node; node = node->next) {
+		if(xmlIsBlankNode(node)) {
+			continue;
+		}
+		if (node->type == XML_ELEMENT_NODE) {
+			if (!string((char *)node->name).compare("config")) {
+				fomod = ParseConfigXml(node->children);
 			}
 		}
-
-//		ParseXml(cur_node->children, data);
 	}
 
 	return fomod;
